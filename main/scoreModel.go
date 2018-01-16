@@ -1,7 +1,7 @@
 package main
 
 type Score struct{
-	Name string `json:"naam"`
+	Name string `json:"name"`
 	Score int64 `json:"score"`
 }
 
