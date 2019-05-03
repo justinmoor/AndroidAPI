@@ -1,13 +1,13 @@
-package main
+package logging
 
-import(
+import (
 	"log"
 	"net/http"
 	"time"
 )
 
-func logger(handler http.Handler, name string) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r * http.Request) {
+func Logger(handler http.Handler, name string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
 		handler.ServeHTTP(w, r)
