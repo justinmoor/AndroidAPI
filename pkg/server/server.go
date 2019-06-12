@@ -21,7 +21,6 @@ type Server struct {
 func NewServer(repo *database.ScoreRepository) *Server {
 	var s Server
 	s.routes = registerRoutes(&s)
-
 	s.scoreRepo = repo
 	s.router = route.NewRouter(s.routes)
 
@@ -70,7 +69,7 @@ func (s *Server) showScore(w http.ResponseWriter, r *http.Request) {
 	data, err := json.Marshal(scores)
 
 	if err != nil {
-		SendError(w)
+		SendError(&w)
 		return
 	}
 
@@ -78,10 +77,10 @@ func (s *Server) showScore(w http.ResponseWriter, r *http.Request) {
 	_, err = w.Write(data)
 
 	if err != nil {
-		SendError(w)
+		SendError(&w)
 	}
 }
 
-func SendError(w http.ResponseWriter) {
-	http.Error(w, "Something went wrong...", http.StatusInternalServerError)
+func SendError(w *http.ResponseWriter) {
+	http.Error(*w, "Something went wrong...", http.StatusInternalServerError)
 }

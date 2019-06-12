@@ -13,12 +13,12 @@ type ScoreRepository struct {
 }
 
 type DbConfig struct {
-	server, port, user, password, database string
+	Server, Port, User, Password, Database string
 }
 
 func NewScoreRepository(c DbConfig) *ScoreRepository {
-	connString := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%d;database=%s;",
-		c.server, c.user, c.password, c.port, c.database)
+	connString := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%s;database=%s;",
+		c.Server, c.User, c.Password, c.Port, c.Database)
 
 	db, err := sql.Open("sqlserver", connString)
 

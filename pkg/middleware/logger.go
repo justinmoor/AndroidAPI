@@ -1,4 +1,4 @@
-package logging
+package middleware
 
 import (
 	"log"
@@ -6,17 +6,16 @@ import (
 	"time"
 )
 
-func Logger(handler http.Handler, name string) http.Handler {
+func Logger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
-		handler.ServeHTTP(w, r)
+		next.ServeHTTP(w, r)
 
 		log.Printf(
-			"%s\t%s\t%s\t%s",
+			"%s\t%s\t%s",
 			r.Method,
 			r.RequestURI,
-			name,
 			time.Since(start),
 		)
 	})

@@ -1,7 +1,7 @@
 package route
 
 import (
-	"CanYouGetTo20_REST-API/pkg/logging"
+	"CanYouGetTo20_REST-API/pkg/middleware"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -18,13 +18,14 @@ type Routes []Route
 
 func NewRouter(routes Routes) *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
+	router.Use(middleware.Logger)
+
 	log.Println("Setting up routes...")
 	log.Println("Available routes:")
 
 	for _, route := range routes {
 		var handler http.Handler
 		handler = route.HandlerFunc
-		handler = logging.Logger(handler, route.Name)
 
 		log.Println(route.Name, route.Method, route.Pattern)
 
