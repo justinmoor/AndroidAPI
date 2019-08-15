@@ -60,27 +60,29 @@ func (s *Server) submitScore(w http.ResponseWriter, r *http.Request) {
 	submittedScore.Name = name
 	submittedScore.Score = i
 
-	s.scoreRepo.SubmitScore(submittedScore)
+	err := s.scoreRepo.SubmitScore(submittedScore)
+	if err != nil {
+		http.Error(w, "Something went wrong...", http.StatusInternalServerError)
+	}
 }
 
 func (s *Server) showScore(w http.ResponseWriter, r *http.Request) {
-	scores := s.scoreRepo.GetScore()
+	scores, err := s.scoreRepo.GetScore()
+	if err != nil {
+		http.Error(w, "Something went wrong...", http.StatusInternalServerError)
+		return
+	}
 
 	data, err := json.Marshal(scores)
-
 	if err != nil {
-		SendError(&w)
+		http.Error(w, "Something went wrong...", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	_, err = w.Write(data)
-
 	if err != nil {
-		SendError(&w)
+		http.Error(w, "Something went wrong...", http.StatusInternalServerError)
+		return
 	}
-}
-
-func SendError(w *http.ResponseWriter) {
-	http.Error(*w, "Something went wrong...", http.StatusInternalServerError)
 }

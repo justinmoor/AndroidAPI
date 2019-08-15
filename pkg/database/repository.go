@@ -36,12 +36,12 @@ func NewScoreRepository(c DbConfig) *ScoreRepository {
 	return &ScoreRepository{db}
 }
 
-func (repo *ScoreRepository) GetScore() score.Scores {
+func (repo *ScoreRepository) GetScore() (score.Scores, error) {
 	var scores score.Scores
 	stmt, err := repo.db.Prepare("SELECT TOP(10) name, score FROM scores ORDER BY score DESC")
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	defer stmt.Close()
@@ -49,7 +49,7 @@ func (repo *ScoreRepository) GetScore() score.Scores {
 	rows, err := stmt.Query()
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	defer rows.Close()
@@ -59,16 +59,16 @@ func (repo *ScoreRepository) GetScore() score.Scores {
 		err := rows.Scan(&scoreEntry.Name, &scoreEntry.Score)
 
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 
 		scores = append(scores, scoreEntry)
 	}
 
-	return scores
+	return scores, nil
 }
 
-func (repo *ScoreRepository) SubmitScore(score score.Score) {
+func (repo *ScoreRepository) SubmitScore(score score.Score) error {
 	stmt, err := repo.db.Prepare("INSERT INTO scores (name, score) VALUES(@Name, @Score)")
 
 	if err != nil {
@@ -77,12 +77,12 @@ func (repo *ScoreRepository) SubmitScore(score score.Score) {
 
 	defer stmt.Close()
 
-	_, err = stmt.Exec(
+	if _, err = stmt.Exec(
 		sql.Named("Name", score.Name),
 		sql.Named("Score", score.Score),
-	)
-
-	if err != nil {
-		log.Println(err)
+	); err != nil {
+		return err
 	}
+
+	return nil
 }
